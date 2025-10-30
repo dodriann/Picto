@@ -25,7 +25,7 @@ jobs:
 
       - name: Build
         env:
-          DEVKITPRO: /opt/devkitpro
+          DEVKITPRO: /opt/devkitPro
         run: make
 
       - name: Upload artifact
