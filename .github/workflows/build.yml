@@ -18,13 +18,13 @@ jobs:
       # Das Image enthält bereits alles Nötige.
       - name: Verify toolchain
         run: |
-          echo "Listing /usr/local/devkitPro:"
+          echo "Listing /c/devkitPro:"
           ls -la /usr/local/devkitPro || true
           test -f /usr/local/devkitPro/3ds_rules && echo "3ds_rules OK"
 
       - name: Build
         env:
-          DEVKITPRO: /usr/local/devkitPro
+          DEVKITPRO: /c/devkitPro
         run: |
           echo "Using DEVKITPRO=$DEVKITPRO"
           make
