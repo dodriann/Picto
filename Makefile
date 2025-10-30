@@ -1,25 +1,13 @@
-# ---- devkitPro Pfade (support Windows & Linux) ----
-DEVKITPRO ?= /opt/devkitpro          # GitHub-Container (Linux)
+# ---- devkitPro Pfad-Setup ----
+DEVKITPRO ?= /opt/devkitpro
 DEVKITARM  ?= $(DEVKITPRO)/devkitARM
 
-# Windows/MSYS2-Fallbacks
-ifeq ($(wildcard $(DEVKITPRO)/3ds_rules),)
-  DEVKITPRO := /c/devkitPro
-  DEVKITARM := $(DEVKITPRO)/devkitARM
-endif
-ifeq ($(wildcard $(DEVKITPRO)/3ds_rules),)
-  DEVKITPRO := /C:/devkitPro         # falls MSYS so mountet
-  DEVKITARM := $(DEVKITPRO)/devkitARM
+# 3ds_rules einbinden (immer unter devkitARM)
+ifeq ($(wildcard $(DEVKITARM)/3ds_rules),)
+  $(error Konnte $(DEVKITARM)/3ds_rules nicht finden. Bitte devkitARM prüfen!)
 endif
 
-# 3ds_rules einbinden (erst Wurzel, dann unter devkitARM)
-ifneq ($(wildcard $(DEVKITPRO)/3ds_rules),)
-  include $(DEVKITPRO)/3ds_rules
-else ifneq ($(wildcard $(DEVKITARM)/3ds_rules),)
-  include $(DEVKITARM)/3ds_rules
-else
-  $(error Konnte 3ds_rules nicht finden. Erwartet unter $(DEVKITPRO)/3ds_rules oder $(DEVKITARM)/3ds_rules)
-endif
+include $(DEVKITARM)/3ds_rules
 # ---- Ende Pfad-Setup ----
 
 TARGET  := my3dsapp
