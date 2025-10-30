@@ -1,12 +1,5 @@
 # ---- devkitPro Pfad festlegen (ohne Auto-Find, damit nichts doppelt wird) ----
 DEVKITPRO ?= /c/devkitPro
-# Fallbacks für lokale Windows-Installationen:
-ifeq ($(wildcard $(DEVKITPRO)/3ds_rules),)
-  DEVKITPRO := /opt/devkitpro
-endif
-ifeq ($(wildcard $(DEVKITPRO)/3ds_rules),)
-  DEVKITPRO := /usr/local/devkitPro
-endif
 
 # Harte Prüfung (hilfreiche Meldung statt kryptischem Fehler)
 ifeq ($(wildcard $(DEVKITPRO)/3ds_rules),)
