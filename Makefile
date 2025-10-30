@@ -1,12 +1,25 @@
-# ---- devkitPro Pfad festlegen (ohne Auto-Find, damit nichts doppelt wird) ----
-DEVKITPRO ?= /c/devkitPro
+# ---- devkitPro Pfade (support Windows & Linux) ----
+DEVKITPRO ?= /opt/devkitpro          # GitHub-Container (Linux)
+DEVKITARM  ?= $(DEVKITPRO)/devkitARM
 
-# Harte Prüfung (hilfreiche Meldung statt kryptischem Fehler)
+# Windows/MSYS2-Fallbacks
 ifeq ($(wildcard $(DEVKITPRO)/3ds_rules),)
-  $(error Konnte $(DEVKITPRO)/3ds_rules nicht finden. Setze DEVKITPRO korrekt.)
+  DEVKITPRO := /c/devkitPro
+  DEVKITARM := $(DEVKITPRO)/devkitARM
+endif
+ifeq ($(wildcard $(DEVKITPRO)/3ds_rules),)
+  DEVKITPRO := /C:/devkitPro         # falls MSYS so mountet
+  DEVKITARM := $(DEVKITPRO)/devkitARM
 endif
 
-include $(DEVKITPRO)/3ds_rules
+# 3ds_rules einbinden (erst Wurzel, dann unter devkitARM)
+ifneq ($(wildcard $(DEVKITPRO)/3ds_rules),)
+  include $(DEVKITPRO)/3ds_rules
+else ifneq ($(wildcard $(DEVKITARM)/3ds_rules),)
+  include $(DEVKITARM)/3ds_rules
+else
+  $(error Konnte 3ds_rules nicht finden. Erwartet unter $(DEVKITPRO)/3ds_rules oder $(DEVKITARM)/3ds_rules)
+endif
 # ---- Ende Pfad-Setup ----
 
 TARGET  := my3dsapp
@@ -17,6 +30,5 @@ LIBS    := -lctru -lm
 
 .PHONY: all clean
 all: $(TARGET).3dsx
-
 clean:
 	@$(RM) -r $(BUILD) $(TARGET).3dsx $(TARGET).smdh
