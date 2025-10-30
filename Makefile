@@ -1,35 +1,34 @@
-# --- DEVKITPRO automatisch finden ---
-# 1) Standard im GitHub-Container
+# --- Automatische Suche nach devkitPro ---
+# Standardpfade prüfen
 DEVKITPRO ?= /usr/local/devkitPro
-# 2) Häufige Alternativen
 ifeq ("$(wildcard $(DEVKITPRO)/3ds_rules)","")
   DEVKITPRO := /opt/devkitpro
 endif
 ifeq ("$(wildcard $(DEVKITPRO)/3ds_rules)","")
   DEVKITPRO := /opt/devkitPro
 endif
-
-# 3) Letzter Versuch: von der Umgebung übernehmen (falls gesetzt)
-ifneq ("$(origin DEVKITPRO)","undefined")
-  # nichts
+ifeq ("$(wildcard $(DEVKITPRO)/devkitARM/3ds_rules)","")
+  DEVKITPRO := $(shell dirname $(shell find / -type f -name 3ds_rules 2>/dev/null | head -n 1))
 endif
 
-# 4) Harte Fehlermeldung, falls 3ds_rules nirgends liegt
+# Wenn alles fehlschlägt: Fehler
 ifeq ("$(wildcard $(DEVKITPRO)/3ds_rules)","")
-  $(error Konnte 3ds_rules nicht finden. Bitte DEVKITPRO setzen oder 3ds-dev installieren.)
+  $(warning ⚠ 3ds_rules nicht automatisch gefunden. Suche manuell...)
+  $(shell find / -maxdepth 4 -name 3ds_rules 2>/dev/null)
+  $(error ❌ Konnte 3ds_rules nicht finden. Bitte DEVKITPRO setzen oder 3ds-dev installieren.)
 endif
 
 include $(DEVKITPRO)/3ds_rules
-# --- Ende Auto-Detection ---
-include $(DEVKITPRO)/3ds_rules
+# --- Ende Automatik ---
 
 TARGET := my3dsapp
 BUILD   := build
 SOURCES := source
 INCLUDES:= include
-LIBS := -lctru -lm
+LIBS    := -lctru -lm
 
-.PHONY: all
+.PHONY: all clean
+
 all: $(TARGET).3dsx
 
 clean:
