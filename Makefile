@@ -1,5 +1,5 @@
-# Fallback: wenn DEVKITPRO fehlt, nimm Standardpfad der Docker-Images
-DEVKITPRO ?= /opt/devkitpro
+# Automatisch DEVKITPRO finden (funktioniert auch in GitHub Actions)
+DEVKITPRO ?= /usr/local/devkitPro
 include $(DEVKITPRO)/3ds_rules
 
 TARGET := my3dsapp
