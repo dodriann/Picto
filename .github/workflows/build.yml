@@ -15,19 +15,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # Das Image enthält bereits alles Nötige.
-      - name: Verify toolchain
-        run: |
-          echo "Listing /c/devkitPro:"
-          ls -la /usr/local/devkitPro || true
-          test -f /usr/local/devkitPro/3ds_rules && echo "3ds_rules OK"
-
       - name: Build
         env:
-          DEVKITPRO: /c/devkitPro
-        run: |
-          echo "Using DEVKITPRO=$DEVKITPRO"
-          make
+          DEVKITPRO: /opt/devkitpro
+        run: make
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
@@ -35,4 +26,4 @@ jobs:
           name: my3dsapp-build
           path: |
             *.3dsx
-            *.smdh
+            *.smdh
