@@ -15,10 +15,33 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install 3ds packages
-        run: echo "Skipping package install (already in image)"
+      # Mirror-Fallback + (nur wenn nötig) 3ds-dev nachinstallieren
+      - name: Ensure 3ds toolchain
+        run: |
+          set -e
+          # DEVKITPRO-Umgebung für make
+          echo "DEVKITPRO=/usr/local/devkitPro" >> $GITHUB_ENV
+          # Falls 3ds_rules schon da ist, überspringen
+          if [ -f /usr/local/devkitPro/3ds_rules ]; then
+            echo "3ds_rules found in /usr/local/devkitPro ✔"
+            exit 0
+          fi
+          echo "3ds_rules missing, trying install via dkp-pacman…"
+          # Mirror-Fallback (falls pkg.devkitpro.org Probleme macht)
+          sed -i 's#https://pkg.devkitpro.org/packages#https://downloads.devkitpro.org/packages#g' /etc/pacman.conf || true
+          sed -i 's#https://pkg.devkitpro.org/packages/3ds#https://downloads.devkitpro.org/packages/3ds#g' /etc/pacman.conf || true
+          dkp-pacman -Sy --noconfirm || true
+          dkp-pacman -S --noconfirm 3ds-dev || true
+          # Noch einmal prüfen:
+          if [ ! -f /usr/local/devkitPro/3ds_rules ]; then
+            echo "WARN: 3ds_rules immer noch nicht gefunden."
+            echo "Suche nach alternativen Pfaden…"
+            find / -maxdepth 4 -name 3ds_rules || true
+          fi
 
       - name: Build
+        env:
+          DEVKITPRO: /usr/local/devkitPro
         run: make
 
       - name: Upload artifact
