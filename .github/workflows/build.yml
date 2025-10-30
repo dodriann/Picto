@@ -1,19 +1,14 @@
-name: build-3dsx
-
-on:
-  push:
-    branches: [ main ]
-  pull_request:
-
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    container:
-      image: devkitpro/devkitarm:latest
-
-    steps:
+steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Install 3DS libraries
+        run: |
+          set -e
+          echo "Installing 3DS devkit libraries..."
+          dkp-pacman -Sy --noconfirm 3ds-dev || true
+          dkp-pacman -S --needed --noconfirm 3ds-citro3d 3ds-citro2d 3ds-libctru || true
+          ls -R /opt/devkitpro/libctru || true
 
       - name: Build
         env:
